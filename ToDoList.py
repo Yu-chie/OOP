@@ -14,7 +14,8 @@ init()
 #username = input("Enter a Username: ").strip()
 #print(Fore.GREEN + f"Welcome, {username}! Let's Get Started!" + Style.RESET_ALL)
 
-tasks = []       # List to store tasks
+# List to store tasks
+tasks = []
 
 #Clear the console screen
 def clear_console():     
@@ -60,13 +61,6 @@ def display_task():
         print(Fore.CYAN + Style.BRIGHT + "=========================================================" + Style.RESET_ALL)
 
 # Main Menu (Task List + Menu)
-## - Display all task in a neat format with status and due date.
-## - Show menu options directly below the task list.
-##   - 1. Add Task
-##   - 2. Delete Task
-##   - 3. Edit Task
-##   - 4. Update Task Status
-##   - 0. Exit
 def display_menu():     #Display task list and status along with menu options
     clear_console()
     task_progress()
@@ -80,10 +74,7 @@ def display_menu():     #Display task list and status along with menu options
     print(Fore.CYAN + Style.BRIGHT + "=====================================" + Style.RESET_ALL)
 
 #Adding Task
-## - Ask user for Task name
-## - Ask user for Task Due Date (Optional)
 ## - Ask user for Task Details (optional)
-## - Add Task to the list with default status
 def add_task():
     print("\nAdding a task...")
     try:
@@ -93,12 +84,12 @@ def add_task():
         return
 
     for i in range(n_task):
-        name = input("\nEnter task name: ").strip()       #Get Task from User
-        due_date = input("Enter due date (or press Enter to skip): ") or "No due date"
+        name = input("\nEnter task name: ").strip()       ## - Ask user for Task name
+        due_date = input("Enter due date (or press Enter to skip): ") or "No due date"      ## - Ask user for Task Due Date (Optional)
         
-        task = {
+        task = {        ## - Add Task to the list with default status
             "name": name,
-            "status": "Not Started",  # Default status
+            "status": "Not Started", 
             "due_date": due_date
         }
         tasks.append(task)  # Add to list
@@ -107,10 +98,6 @@ def add_task():
     time.sleep(1)
 
 #Deleting Task
-## - Ask user for task name to remove
-## - Ask user for confirmation
-## - If task exists, remove it from the list.
-## - If not found, show an error message.
 def delete_task():
     clear_console()
     print("\nDeleting a task...")
@@ -123,7 +110,7 @@ def delete_task():
 
     while True:
         try:
-            task_num = int(input("Enter a task number to delete or 0 to cancel: ")) - 1
+            task_num = int(input("Enter a task number to delete or 0 to cancel: ")) - 1     ## - Ask user for task name to remove
 
             if task_num == -1:
                 print("Task Deletion Cancelled")
@@ -131,9 +118,9 @@ def delete_task():
                 return
 
             if 0 <= task_num < len(tasks):
-                confirm = input(f"Are you sure you want to delete '{tasks[task_num]['name']}'? (y/n): ").lower()
+                confirm = input(f"Are you sure you want to delete '{tasks[task_num]['name']}'? (y/n): ").lower()        ## - Ask user for confirmation
                 if confirm == 'y':
-                    deleted_task = tasks.pop(task_num)
+                    deleted_task = tasks.pop(task_num)          ## - If task exists, remove it from the list.
                     print(f"Task '{deleted_task['name']}' deleted successfully!")
                     time.sleep(1)
                     return
@@ -149,9 +136,7 @@ def delete_task():
 
     time.sleep(1)
 
-# Editing Task Name
-## - Ask user which task they want to rename.
-## - Allow user to enter a new name.
+# Editing Task
 ## - Update the task name in the list.
 def edit_task():
     clear_console()
@@ -165,12 +150,12 @@ def edit_task():
     display_task()
 
     try:
-        task_num = int(input("Enter the task number to edit: ")) - 1
+        task_num = int(input("Enter the task number to edit: ")) - 1        ## - Ask user which task they want to edit
         if 0 <= task_num < len(tasks):          
             while True:
                 print("\nWhat would you like to edit?")
-                print(Fore.CYAN + "1." + Style.RESET_ALL + "Edit Task Name")
-                print(Fore.CYAN + "2." + Style.RESET_ALL + "Task Due Date" )
+                print(Fore.CYAN + "1." + Style.RESET_ALL + "Edit Task Name")        
+                print(Fore.CYAN + "2." + Style.RESET_ALL + "Task Due Date" )        
                 print(Fore.RED + "0." + Style.RESET_ALL + "Cancel")
                 
                 try:
@@ -180,6 +165,7 @@ def edit_task():
                     time.sleep(1)
                     continue        # Restart the loop if input is invalid
 
+                ## - Allow user to enter a new name.
                 if option == 1:
                     new_name = input("Enter new task name: ").strip()
                     if new_name:
@@ -188,12 +174,14 @@ def edit_task():
                         break
                     else:
                         print(Fore.RED + "Task Name Cannot Be Empty" + Style.RESET_ALL)
-                        continue #Test
+                        
+                ## - Allow user to enter a new due date.
                 if option == 2:
                     new_due = input("Enter a new Due Date: ").strip()
                     tasks[task_num]["due_date"] = new_due
                     print("Due Date updated sucessfully!")
                     break
+
                 if option == 0:
                     print(Fore.YELLOW + "Edit Cancelled" + Style.RESET_ALL)
                     time.sleep(1)
@@ -230,11 +218,6 @@ def loading_animation(message="Processing"):
     print(Style.RESET_ALL)
 
 # Updating Task Status
-## - Ask user which task to update.
-## - Show list of possible statuses.
-## - Update status if task exists.
-## - Show Display Tasks with updated status
-## - Allow user to return to menu
 def task_status():
     clear_console()
     print("\nUpdating task status...")
@@ -247,7 +230,7 @@ def task_status():
     
     while True:
         try:
-            task_num = int(input("Enter the task number to update status (or 0 to cancel): ")) - 1
+            task_num = int(input("Enter the task number to update status (or 0 to cancel): ")) - 1      ## - Ask user which task to update.
             
             if task_num == -1:      #If 0 is entered
                 print(Fore.YELLOW + "Task status update cancelled" + Style.RESET_ALL)
@@ -267,6 +250,8 @@ def task_status():
                             print(Fore.YELLOW + "Task status update cancelled" + Style.RESET_ALL)
                             time.sleep(1)
                             return
+                        
+                        ## - Show list of possible statuses.
                         if 0 <= status_choice < len(status_options):
                             tasks[task_num]["status"] = status_options[status_choice]
                             loading_animation()
@@ -283,9 +268,7 @@ def task_status():
             print(Fore.RED + "Invalid input! Enter a number." + Style.RESET_ALL)
         time.sleep(1)
 
-# Create the main loop
-## - Keep showing the menu until the user chooses to exit.
-## - Call the appropriate function based on user input.
+# Main loop
 def main():
     while True:
         display_menu()
