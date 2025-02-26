@@ -19,18 +19,24 @@
 ##   - 4. Update Task Status
 ##   - 0. Exit
 
-task = []       # List to store tasks
+tasks = []       # List to store tasks
 
-def display_menu():
-    def display_task():
-        if not task:
-            print("\n No tasks available")
-        else:
-            print("\n==== Task List ====")
-            for index, task in enumerate(task, start=1):
-                print(f"{index}. {task}")
-            print("===================")
+status_options = [
+    "Not Started", "In Progress", "On Hold", "Compleed", 
+    "Waiting for Review", "Needs Revision"
+]
 
+def display_task():     #Display all tasks with status and due date
+    if not tasks:
+        print("\n No tasks available")
+    else:
+        print("\n==== Task List ====")
+        for index, task in enumerate(tasks, start=1):
+            print(f"{index}. {task['name']} | Status: {task['status']} | Due: {task['due_date']}")
+        print("===================")
+
+def display_menu():     #Display task list and status along with menu options
+    display_task()
     print("\n==== To-Do List Menu ====")
     print("1. Add task")
     print("2. Delete Task")
@@ -39,16 +45,119 @@ def display_menu():
     print("0. Exit")
     print("=========================")
 
+#Define the To Do List class
+## - Store Task in a List
+## - Includes Methods for
+##   - Adding Task
+##   - Deleting Task
+##   - Editing Task (Optional)
+##   - Updating Task Status
+##   - Displaying All Task (Always show with menu)
+##   - Filtering Tasks by Status or Due Date (Optional)
+
+#Adding Task
+## - Ask user for Task name
+## - Ask user for Task Due Date (Optional)
+## - Ask user for Task Details (optional)
+## - Add Task to the list with default status
 def add_task():
-     print("Adding a task...")
-            print()
-            n_task = int(input("How many task do you wish to add?: "))
+    print("Adding a task...")
+    try:
+        n_task = int(input("How many tasks do you wish to add?: "))
+    except ValueError:
+        print("Invalid input! Enter a number.")
+        return
 
-            for i in range(n_task):
-                task = input("Enter Task name: ")       #Get Task from User
-                task.append(task)       #Add to list
-                print(f"Task '{task}' added successfully")
+    for i in range(n_task):
+        name = input("Enter task name: ")       #Get Task from User
+        due_date = input("Enter due date (or press Enter to skip)") or "No due date"
+        
+        task = {
+            "name": name,
+            "status": "Not Started",  # Default status
+            "due_date": due_date
+        }
+        tasks.append(task)  # Add to list
+        print(f"Task '{name}' added successfully!")
 
+#Deleting Task
+## - Ask user for task name to remove
+## - Ask user for confirmation
+## - If task exists, remove it from the list.
+## - If not found, show an error message.
+def delete_task():
+    print("Deleting a task...")
+    if not tasks:
+        print("No task to delete")
+        return
+    try:
+        task_num = int(input("Enter a task number to delete: ")) - 1
+        if 0 <= task_num < len(tasks):
+            deleted_task = tasks.pop(task_num)
+            print(f"Task '{deleted_task['name']}' deleted successfully!")
+        else:
+            print("Invalid task number")
+    except ValueError:
+        print("Invalid input! Enter a number")
+
+# Editing Task Name (Optional)
+## - Ask user which task they want to rename.
+## - Allow user to enter a new name.
+## - Update the task name in the list.
+def edit_task():
+    print("Editing a task...")
+    if not tasks:
+        print("No task available to edit")
+        return
+    
+    display_task()
+
+    try:
+        task_num = int(input("Enter the task number to edit: ")) - 1
+        if 0 <= task_num < len(tasks):
+            new_name = input("Enter new task name: ")
+            tasks[task_num]["name"] = new_name
+            print("Task name updated successfully!")
+        else:
+            print("Invalid task number!")
+    except ValueError:
+        print("Invalid input! Enter a number.")      
+
+#Updating Task Status
+## - Ask user which task to update.
+## - Show list of possible statuses.
+## - Update status if task exists.
+## - Show Display Tasks with updated status
+## - Allow user to return to menu
+def task_status():
+    print("Uptating task status...")
+    if not tasks:
+        print("No tasks available to update.")
+        return
+
+    display_task()
+    
+    try:
+        task_num = int(input("Enter the task number to update status: ")) - 1
+        if 0 <= task_num < len(tasks):
+            print("Select a new status:")
+            for i, status in enumerate(status_options, start=1):
+                print(f"{i}. {status}")
+            
+            status_choice = int(input("Enter status number: ")) - 1
+            if 0 <= status_choice < len(status_options):
+                tasks[task_num]["status"] = status_options[status_choice]
+                print("Task status updated successfully!")
+            else:
+                print("Invalid status number!")
+        else:
+            print("Invalid task number!")
+    except ValueError:
+        print("Invalid input! Enter a number.")
+
+#Create the main loop
+## - Keep showing the menu until the user chooses to exit.
+## - Call the appropriate function based on user input.
 def main():
     while True:
         display_menu()
@@ -59,22 +168,19 @@ def main():
             continue        # Restart the loop if input is invalid
 
         if choice == 1:
-            add_task()      # Code to add task
+            add_task()       # Code to add task
             pass
 
         if choice == 2:
-            print("Deleting a task...")
-            # Code to delete task
+            delete_task()    # Code to delete task
             pass
         
         if choice == 3:
-            print("Editing a task...")
-            # Code to Edit Task
+            edit_task()      # Code to Edit Task
             pass
 
         if choice == 4:
-            pint("Uptating task status...")
-            # Code to Update Task
+            task_status()    # Code to Update Task
             pass
 
         if choice == 0:
@@ -87,64 +193,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-#Define Task Status Class
-## - Each task should have a name and a status
-## - Default status should be "Not Started"
-## - Include a method to update the status
-
-
-
-#Define the To Do List class
-## - Store Task in a List
-## - Includes Methods for
-##   - Adding Task
-##   - Deleting Task
-##   - Editing Task (Optional)
-##   - Updating Task Status
-##   - Displaying All Task (Always show with menu)
-##   - Filtering Tasks by Status or Due Date (Optional)
-
-# Error Handling
-## - Prevent invalid menu choices.
-## - Prevent duplicate task names (Optional).
-## - Show error message if task doesn’t exist.
-
-# Aesthetic Formatting
-## - Use separators (————) to make menus clearer.
-## - Add small delays (time.sleep) before refreshing the menu.
-
-#Adding Task
-## - Ask user for Task name
-## - Ask user for Task Due Date (Optional)
-## - Ask user for Task Details (optional)
-## - Add Task to the list with default status
-
-#Deleting Task
-## - Ask user for task name to remove
-## - Ask user for confirmation
-## - If task exists, remove it from the list.
-## - If not found, show an error message.
-
-# Editing Task Name (Optional)
-## - Ask user which task they want to rename.
-## - Allow user to enter a new name.
-## - Update the task name in the list.
-
-#Updating Task Status
-## - Ask user which task to update.
-## - Show list of possible statuses.
-## - Update status if task exists.
-## - Show Display Tasks with updated status
-## - Allow user to return to menu
-
-# Updating Due Date (Optional)
-## - Ask which task to update
-## - Let the user enter a new due date
-## - Update and display changes
-
-#Create the main loop
-## - Keep showing the menu until the user chooses to exit.
-## - Call the appropriate function based on user input.
-## - Make sure there’s an option to return to the menu.
 
