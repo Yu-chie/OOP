@@ -49,11 +49,15 @@ def display_task():
     if not tasks:
         print(Fore.RED + "\n No tasks available" + Style.RESET_ALL)
     else:
-        print(Fore.CYAN + Style.BRIGHT + "\n================= Task List =================" + Style.RESET_ALL)
+        print(Fore.CYAN + Style.BRIGHT + "\n======================= Task List =======================" + Style.RESET_ALL)
+        print(Fore.YELLOW + Style.BRIGHT + f"{'No.':<5}{'Task Name':<20}{'Status':<20}{'Due Date':<15}" + Style.RESET_ALL)
+        print(Fore.CYAN + Style.BRIGHT + "=========================================================" + Style.RESET_ALL)
+
         for index, task in enumerate(tasks, start=1):
             status_color = get_status_color(task["status"])
-            print(f"{index}. {task['name']}     |    Status: {status_color}{task['status']}{Style.RESET_ALL}    |   Due: {task['due_date']}")
-        print(Fore.CYAN + Style.BRIGHT + "===========================================" + Style.RESET_ALL)
+            print(f"{str(index) + '.':<5}{task['name']:<20}{status_color + task['status']:<25}{Style.RESET_ALL}{task['due_date']:<15}")
+
+        print(Fore.CYAN + Style.BRIGHT + "=========================================================" + Style.RESET_ALL)
 
 # Main Menu (Task List + Menu)
 ## - Display all task in a neat format with status and due date.
