@@ -74,6 +74,64 @@ def display_menu():     #Display task list and status along with menu options
     print(Fore.RED + Style.BRIGHT + "0." + Style.RESET_ALL + " Exit")
     print(Fore.CYAN + Style.BRIGHT + "=====================================" + Style.RESET_ALL)
 
+#Getting Due Date/Time
+def get_due_date():
+    #Choose Due Option
+    #clear_console()
+    print(Fore.CYAN + Style.BRIGHT + "\n======= Choose how to set Due =======" + Style.RESET_ALL)
+    print(Fore.GREEN + Style.BRIGHT + "1." + Style.RESET_ALL + " Date only")
+    print(Fore.GREEN + Style.BRIGHT + "2." + Style.RESET_ALL + " Time Only")
+    print(Fore.GREEN + Style.BRIGHT + "3." + Style.RESET_ALL + " Date and Time")
+    print(Fore.GREEN + Style.BRIGHT + "4." + Style.RESET_ALL + " No Due date")
+    print(Fore.CYAN + Style.BRIGHT + "=====================================" + Style.RESET_ALL)
+
+    while True:
+        try:
+            option = int(input("Enter your Option: "))
+            if option not in [1, 2, 3, 4]:
+                print("Invalid option! Choose between 1-4.")
+                continue
+            break
+        except ValueError:
+            print("Invalid input! Enter a number")
+
+    due_date = "No Due Date"
+
+    ## - Ask user for Task Due Date (Optional)    
+    if option == 1:
+        while True:
+            due_date = input("Enter due date (MM-DD-YYYY): ").strip()
+            try:
+                datetime.strptime(f"{due_date}", "%m-%d-%Y")
+                break
+            except ValueError:
+                print("Invalid Format")          
+    #Ask for time
+    elif option == 2:
+        while True:
+            due_time = input("Enter due date (HH-MM): ").strip()
+            try:
+                datetime.strptime(f"{due_time}", "%H:%M")
+                due_date = f"{due_time}"
+                break
+            except ValueError:
+                print("Invalid Format")    
+    #Date and Time
+    elif option == 3:
+        while True:
+            due_date = input("Enter due date (MM-DD-YYYY): ").strip()
+            due_time = input("Enter due date (HH-MM): ").strip()
+            try:
+                datetime.strptime(f"{due_date} {due_time}", "%m-%d-%Y %H:%M")
+                due_date = f"{due_date} {due_time}"
+                break
+            except ValueError:
+                print("Invalid Format")       
+    elif option == 4:
+        print(due_date)
+
+    return due_date
+
 #Adding Task
 ## - Ask user for Task Details (optional)
 def add_task():
@@ -98,69 +156,20 @@ def add_task():
         while True:        
             ## - Ask user for Task name
             name = input("\nEnter task name: ").strip()       
+            if any (task["name"].lower() == name.lower() for task in tasks):
+                print("Task already Exists!")
             if name:
                 break
             print("Task name cannot be empty! Enter task name")
     
-        #Choose Due Option
-        #clear_console()
-        print(Fore.CYAN + Style.BRIGHT + "\n======= Choose how to set Due =======" + Style.RESET_ALL)
-        print(Fore.GREEN + Style.BRIGHT + "1." + Style.RESET_ALL + " Date only")
-        print(Fore.GREEN + Style.BRIGHT + "2." + Style.RESET_ALL + " Time Only")
-        print(Fore.GREEN + Style.BRIGHT + "3." + Style.RESET_ALL + " Date and Time")
-        print(Fore.GREEN + Style.BRIGHT + "4." + Style.RESET_ALL + " No Due date")
-        print(Fore.CYAN + Style.BRIGHT + "=====================================" + Style.RESET_ALL)
-
-        while True:
-            try:
-                option = int(input("Enter your Option: "))
-                if option not in [1, 2, 3, 4]:
-                    print("Invalid option! Choose between 1-4.")
-                    continue
-                break
-            except ValueError:
-                print("Invalid input! Enter a number")
-
-        due_date = "No Due Date"
-
-        ## - Ask user for Task Due Date (Optional)    
-        if option == 1:
-            while True:
-                due_date = input("Enter due date (MM-DD-YYYY) or press Enter to skip: ").strip()
-                try:
-                    datetime.strptime(f"{due_date}", "%m-%d-%Y")
-                    break
-                except ValueError:
-                    print("Invalid Format")          
-        #Ask for time
-        if option == 2:
-            while True:
-                due_time = input("Enter due date (HH-MM) or press Enter to skip: ").strip()
-                try:
-                    datetime.strptime(f"{due_time}", "%H:%M")
-                    due_date = f"{due_time}"
-                    break
-                except ValueError:
-                    print("Invalid Format")    
-        #Date and Time
-        if option == 3:
-            while True:
-                due_date = input("Enter due date (MM-DD-YYYY) or press Enter to skip: ").strip()
-                due_time = input("Enter due date (HH-MM) or press Enter to skip: ").strip()
-                try:
-                    datetime.strptime(f"{due_date} {due_time}", "%m-%d-%Y %H:%M")
-                    due_date = f"{due_date} {due_time}"
-                    break
-                except ValueError:
-                    print("Invalid Format")       
-        if option == 4:
-            print(due_date)
+        due_date = get_due_date()
 
         task = {        ## - Add Task to the list with default status
             "name": name,
             "status": "Not Started", 
             "due_date": due_date
         }
+        
         tasks.append(task)  # Add to list
         added_tasks.append(task)
         print(f"Task '{name}' added successfully!")
@@ -185,7 +194,7 @@ def delete_task():
                 print("Task Deletion Cancelled")
                 time.sleep(1)
                 return
-            if 0 <= task_num < len(tasks):
+            elif 0 <= task_num < len(tasks):
                 confirm = input(f"Are you sure you want to delete '{tasks[task_num]['name']}'? (y/n): ").lower()        ## - Ask user for confirmation
                 if confirm == 'y':
                     deleted_task = tasks.pop(task_num)          ## - If task exists, remove it from the list.
@@ -204,7 +213,7 @@ def delete_task():
 
     time.sleep(1)
 
-# Editing Task
+# Edit Task
 ## - Update the task name in the list.
 def edit_task():
     #clear_console()
@@ -234,72 +243,24 @@ def edit_task():
 
                 ## - Allow user to enter a new name.
                 if option == 1:
-                    new_name = input("Enter new task name: ").strip()
-                    if new_name:
-                        tasks[task_num]["name"] = new_name
-                        print("Task name updated successfully!")
-                        break
-                    else:
-                        print(Fore.RED + "Task Name Cannot Be Empty" + Style.RESET_ALL)
-                        
-                ## - Allow user to enter a new due date.
-                if option == 2:
-                    print(Fore.CYAN + Style.BRIGHT + "\n======= Choose how to set Due =======" + Style.RESET_ALL)
-                    print(Fore.GREEN + Style.BRIGHT + "1." + Style.RESET_ALL + " Date only")
-                    print(Fore.GREEN + Style.BRIGHT + "2." + Style.RESET_ALL + " Time Only")
-                    print(Fore.GREEN + Style.BRIGHT + "3." + Style.RESET_ALL + " Date and Time")
-                    print(Fore.GREEN + Style.BRIGHT + "4." + Style.RESET_ALL + " No Due date")
-                    print(Fore.CYAN + Style.BRIGHT + "=====================================" + Style.RESET_ALL)
-
                     while True:
-                        try:
-                            option = int(input("Enter your Option: "))
-                            if option not in [1, 2, 3, 4]:
-                                print("Invalid option! Choose between 1-4.")
-                                continue
+                        new_name = input("Enter new task name: ").strip()
+                        if any (task["name"].lower() == new_name.lower() for task in tasks):
+                            print("Task already Exists!")
+                            continue
+                        if new_name:
+                            tasks[task_num]["name"] = new_name
+                            print("Task name updated successfully!")
                             break
-                        except ValueError:
-                            print("Invalid input! Enter a number")
-
-                    new_due_date = "No Due Date"
-  
-                    ## - Ask for Date   
-                    if option == 1:
-                        while True:
-                            new_due_date = input("Enter due date (MM-DD-YYYY) or press Enter to skip: ").strip()
-                            try:
-                                datetime.strptime(new_due_date, "%m-%d-%Y")
-                                break
-                            except ValueError:
-                                print("Invalid Format")                        
-                    #Ask for time
-                    if option == 2:
-                        while True:
-                            new_due_time = input("Enter due date (HH-MM) or press Enter to skip: ").strip()
-                            try:
-                                datetime.strptime(new_due_time, "%H:%M")
-                                new_due_date = new_due_time
-                                break
-                            except ValueError:
-                                print("Invalid Format")                  
-                    #Date and Time
-                    if option == 3:
-                        while True:
-                            new_due_date = input("Enter due date (MM-DD-YYYY) or press Enter to skip: ").strip()
-                            new_due_time = input("Enter due date (HH-MM) or press Enter to skip: ").strip()
-                            try:
-                                datetime.strptime(f"{new_due_date} {new_due_time}", "%m-%d-%Y %H:%M")
-                                due_date = f"{new_due_date} {new_due_time}"
-                                break
-                            except ValueError:
-                                print("Invalid Format")                 
-                    if option == 4:
-                        print(due_date)
-                    tasks[task_num]["due_date"] = new_due_date
-                    print(Fore.GREEN + "Tas Due updated successfully")
-                    time.sleep(1)
-                    return
-                if option == 0:
+                        else:
+                            print(Fore.RED + "Task Name Cannot Be Empty" + Style.RESET_ALL)
+                ## - Allow user to enter a new due date.
+                elif option == 2:
+                    tasks[task_num]["due_date"] = get_due_date()
+                    print("Task due updated successfully!")
+                    break
+                #Cancel Edit
+                elif option == 0:
                     print(Fore.YELLOW + "Edit Cancelled" + Style.RESET_ALL)
                     time.sleep(1)
                     break
@@ -394,20 +355,21 @@ def main():
             add_task()       # Code to add task
             time.sleep(1)
             continue
-        if choice == 2:
+        elif choice == 2:
             delete_task()    # Code to delete task
             time.sleep(1)
             continue   
-        if choice == 3:
+        elif choice == 3:
             edit_task()      # Code to Edit Task
             time.sleep(1)
             continue
-        if choice == 4:
+        elif choice == 4:
             task_status()    # Code to Update Task
             time.sleep(1)
             continue
-        if choice == 0:
-            print("Bye Bye!")
+        elif choice == 0:
+            print("Thank you for using, Bye Bye!")
+            time.sleep(1)
             clear_console()
             break
         else:
